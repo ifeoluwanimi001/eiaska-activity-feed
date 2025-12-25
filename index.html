@@ -3,58 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>What's New Feed</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: transparent;
-  color: #000;
-}
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: transparent;
+    color: #000;
+  }
 
-.feed {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
+  .feed {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
 
-.card {
-  background: #cfcfcf;
-  border-radius: 18px;
-  padding: 14px 16px;
-}
+  /* card as a link */
+  .card {
+    display: block;
+    background: #cfcfcf;
+    border-radius: 18px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.12s ease, filter 0.12s ease;
+  }
 
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 600;
-}
+  .card:hover {
+    transform: translateY(-1px);
+    filter: brightness(0.98);
+  }
 
-.platform {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
 
-.time {
-  font-size: 13px;
-  font-weight: 600;
-}
+  .platform {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-.live {
-  color: #e10600;
-  letter-spacing: 0.5px;
-}
+  .time {
+    font-size: 13px;
+    font-weight: 600;
+  }
 
-.text {
-  margin-top: 8px;
-  font-size: 14px;
-  line-height: 1.4;
-}
+  .live {
+    color: #e10600;
+    letter-spacing: 0.5px;
+  }
+
+  .text {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* optional: tiny arrow hint */
+  .arrow {
+    opacity: 0.55;
+    margin-left: 6px;
+    font-weight: 700;
+  }
 </style>
 </head>
 
@@ -62,77 +78,82 @@ body {
 
 <div class="feed">
 
-  <!-- Twitch -->
-  <div class="card">
+  <!-- Twitch (clickable) -->
+  <a class="card" href="https://www.twitch.tv/eiaska" target="_blank" rel="noopener">
     <div class="top">
-      <div class="platform">🎮 Twitch</div>
+      <div class="platform">🎮 Twitch <span class="arrow">›</span></div>
       <div class="time live" id="twitchTime"></div>
     </div>
-    <div class="text" id="twitchText">
-      Checking Twitch status…
-    </div>
-  </div>
+    <div class="text" id="twitchText">Checking Twitch status…</div>
+  </a>
 
-  <!-- YouTube (static for now) -->
-  <div class="card">
+  <!-- YouTube (clickable) -->
+  <a class="card" href="https://www.youtube.com/" target="_blank" rel="noopener">
     <div class="top">
-      <div class="platform">▶️ YouTube</div>
+      <div class="platform">▶️ YouTube <span class="arrow">›</span></div>
       <div class="time">7d</div>
     </div>
     <div class="text">
-      Fia uploaded her Vancouver, Canada vlog 🍁 to YouTube
+      Eiaska uploaded a new vlog 🍁 to YouTube
     </div>
-  </div>
+  </a>
 
-  <!-- Instagram -->
-  <div class="card">
+  <!-- Instagram (clickable) -->
+  <a class="card" href="https://www.instagram.com/kitsudare/" target="_blank" rel="noopener">
     <div class="top">
-      <div class="platform">📸 Instagram</div>
+      <div class="platform">📸 Instagram <span class="arrow">›</span></div>
       <div class="time">7d</div>
     </div>
     <div class="text">
-      Fia posted on Instagram
+      Eiaska posted on Instagram
     </div>
-  </div>
+  </a>
 
-  <!-- Instagram older -->
-  <div class="card">
+  <!-- Fansly (clickable) -->
+  <a class="card" href="#" target="_blank" rel="noopener" id="fanslyLink">
     <div class="top">
-      <div class="platform">📸 Instagram</div>
+      <div class="platform">⭐ Fansly <span class="arrow">›</span></div>
       <div class="time">22d</div>
     </div>
     <div class="text">
-      Fia posted on Instagram
+      Eiaska posted on Fansly
     </div>
-  </div>
+  </a>
 
 </div>
 
 <script>
-async function checkTwitch() {
-  try {
-    const res = await fetch("https://decapi.me/twitch/uptime/eiaska");
-    const data = await res.text();
+  // Set the Fansly link here once you confirm the exact public URL they want to use.
+  // If Fansly profile links are restricted, link to their Linktree/landing page instead.
+  // Example:
+  // document.getElementById("fanslyLink").href = "https://fansly.com/elaska";
+  document.getElementById("fanslyLink").href = "#";
 
-    if (data.toLowerCase().includes("offline")) {
-      document.getElementById("twitchTime").innerText = "Offline";
+  async function checkTwitch() {
+    try {
+      const res = await fetch("https://decapi.me/twitch/uptime/eiaska");
+      const data = await res.text();
+
+      if (data.toLowerCase().includes("offline")) {
+        document.getElementById("twitchTime").innerText = "Offline";
+        document.getElementById("twitchText").innerText =
+          "Eiaska is currently offline on Twitch";
+      } else {
+        document.getElementById("twitchTime").innerText = "LIVE";
+        document.getElementById("twitchText").innerText =
+          "Eiaska is live on Twitch streaming Fitness & Health";
+      }
+    } catch {
+      document.getElementById("twitchTime").innerText = "";
       document.getElementById("twitchText").innerText =
-        "Eiaska is currently offline on Twitch";
-    } else {
-      document.getElementById("twitchTime").innerText = "LIVE";
-      document.getElementById("twitchText").innerText =
-        "Eiaska is live on Twitch streaming Fitness & Health";
+        "Unable to check Twitch status";
     }
-  } catch {
-    document.getElementById("twitchTime").innerText = "";
-    document.getElementById("twitchText").innerText =
-      "Unable to check Twitch status";
   }
-}
 
-checkTwitch();
-setInterval(checkTwitch, 60000);
+  checkTwitch();
+  setInterval(checkTwitch, 60000);
 </script>
 
 </body>
 </html>
+
