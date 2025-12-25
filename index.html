@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Activity Feed</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: transparent;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.platform {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.text {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.status {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.live {
+  color: #e63946;
+}
+</style>
+</head>
+
+<body>
+<div class="feed">
+
+  <div class="item">
+    <div class="left">
+      <div class="platform">Twitch</div>
+      <div class="text" id="twitch-status">Checking live status…</div>
+    </div>
+    <div class="status live" id="twitch-badge"></div>
+  </div>
+
+  <div class="item">
+    <div class="left">
+      <div class="platform">Instagram</div>
+      <div class="text">New post</div>
+    </div>
+    <div class="status">7d</div>
+  </div>
+
+  <div class="item">
+    <div class="left">
+      <div class="platform">X</div>
+      <div class="text">New post</div>
+    </div>
+    <div class="status">7d</div>
+  </div>
+
+  <div class="item">
+    <div class="left">
+      <div class="platform">Fansly</div>
+      <div class="text">New content</div>
+    </div>
+    <div class="status">22d</div>
+  </div>
+
+</div>
+
+<script>
+async function checkTwitch() {
+  const response = await fetch("https://decapi.me/twitch/uptime/eiaska");
+  const text = await response.text();
+
+  if (text.toLowerCase().includes("offline")) {
+    document.getElementById("twitch-status").innerText = "Offline";
+    document.getElementById("twitch-badge").innerText = "";
+  } else {
+    document.getElementById("twitch-status").innerText = "Eiaska is live on Twitch";
+    document.getElementById("twitch-badge").innerText = "LIVE";
+  }
+}
+
+checkTwitch();
+setInterval(checkTwitch, 60000);
+</script>
+
+</body>
+</html>
