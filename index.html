@@ -1,166 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>What's New Feed</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What's New Feed</title>
 
-<style>
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: transparent;
-    color:#000;
-  }
+  <!-- Pixel/Discord-embed vibe font -->
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet" />
 
-  .feed{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    padding: 0;
-  }
+  <style>
+    :root{
+      /* Soft grayscale palette to match your screenshot */
+      --bg: transparent;
+      --card: #cfcfcf;
+      --card2: #d7d7d7;
+      --text: #4b4b4b;
+      --text2:#6a6a6a;
+      --line: rgba(0,0,0,0.28);
+      --line2: rgba(0,0,0,0.18);
+      --white: #f7f7f7;
+      --shadow: rgba(0,0,0,0.08);
+      --live: #7a7a7a; /* keep grayscale (no red) */
+    }
 
-  /* Card as a clickable link */
-  .card{
-    display:block;
-    background:#cfcfcf;
-    border-radius:18px;
-    padding:14px 16px;
-    text-decoration:none;
-    color:inherit;
-    transition: transform .12s ease, filter .12s ease;
-  }
+    html, body{
+      margin:0;
+      padding:0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Silkscreen", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-  .card:hover{
-    transform: translateY(-1px);
-    filter: brightness(0.98);
-  }
+    /* Wrapper gives “cute page” feel without forcing your Carrd background */
+    .wrap{
+      padding: 0;
+    }
 
-  .top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    font-size:14px;
-    font-weight:600;
+    /* Lace-y top trim (lightweight, no images needed) */
+    .trim{
+      width: 100%;
+      height: 22px;
+      border-bottom: 1px dashed var(--line2);
+      position: relative;
+      margin-bottom: 10px;
+      opacity: 0.95;
+    }
+    .trim:before{
+      content:"";
+      position:absolute;
+      left:0; right:0;
+      top:8px;
+      border-bottom: 2px dotted var(--line2);
+    }
+    .trim:after{
+      content:"🎀";
+      position:absolute;
+      left:50%;
+      transform: translateX(-50%);
+      top:-2px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
 
-    /* This line matches the sample more closely */
-    padding-bottom: 8px;
-    border-bottom: 2px solid rgba(0,0,0,0.25);
-    margin-bottom: 8px;
-  }
+    .title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #3f3f3f;
+    }
+    .title .bell{
+      width:18px; height:18px;
+      display:inline-grid;
+      place-items:center;
+      opacity: 0.9;
+    }
 
-  .platform{
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
+    .feed{
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
 
-  .time{
-    font-size:13px;
-    font-weight:600;
-  }
+    /* Card = clickable like the mock, but still feels like a “feed” block */
+    .card{
+      display:block;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 14px 16px;
+      text-decoration:none;
+      color: inherit;
+      box-shadow: 0 2px 10px var(--shadow);
+      transition: transform .12s ease, filter .12s ease;
+      border: 1px solid rgba(0,0,0,0.10);
+    }
+    .card:hover{
+      transform: translateY(-1px);
+      filter: brightness(0.99);
+    }
 
-  .live{
-    color:#e10600;
-    letter-spacing:0.5px;
-  }
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--line);
+      margin-bottom: 8px;
+    }
 
-  .text{
-    font-size:14.5px;
-    line-height:1.4;
-  }
-</style>
+    .platform{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .icon{
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.20);
+      border: 1px solid rgba(0,0,0,0.12);
+      display:grid;
+      place-items:center;
+      flex: 0 0 auto;
+    }
+    .icon svg{
+      width: 14px; height:14px;
+      opacity: 0.85;
+    }
+
+    .platform .name{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .time{
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text2);
+      flex: 0 0 auto;
+    }
+
+    /* LIVE stays grayscale to match her site */
+    .time.live{
+      color: var(--text);
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(0,0,0,0.14);
+      padding: 4px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.6px;
+    }
+
+    .text{
+      font-size: 13px;
+      line-height: 1.45;
+      color: #3f3f3f;
+      letter-spacing: 0.1px;
+    }
+
+    /* Small “soft” footer line like embeds */
+    .softline{
+      margin-top: 10px;
+      border-top: 1px dashed var(--line2);
+      opacity: 0.9;
+    }
+
+    /* Mobile */
+    @media (max-width: 480px){
+      .title{ font-size: 16px; }
+      .card{ padding: 13px 14px; border-radius: 16px; }
+      .text{ font-size: 12.5px; }
+      .top{ font-size: 12.5px; }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="wrap">
+    <!-- Optional: keep the trim; remove if you want a cleaner embed -->
+    <div class="trim"></div>
 
-<div class="feed">
-
-  <!-- Twitch (auto LIVE) -->
-  <a class="card" href="https://www.twitch.tv/eiaska" target="_blank" rel="noopener">
-    <div class="top">
-      <div class="platform">🎮 Twitch</div>
-      <div class="time live" id="twitchTime">…</div>
+    <div class="title">
+      <span class="bell">🔔</span>
+      <span>What's New</span>
     </div>
-    <div class="text" id="twitchText">Checking Twitch status…</div>
-  </a>
 
-  <!-- YouTube (manual placeholder for now; update text/time anytime) -->
-  <!-- Replace the href with her exact channel link if she gives it -->
-  <a class="card" href="https://www.youtube.com/" target="_blank" rel="noopener">
-    <div class="top">
-      <div class="platform">▶️ YouTube</div>
-      <div class="time">7d</div>
+    <div class="feed">
+      <!-- Twitch (auto) -->
+      <a class="card" id="twitchLink" href="https://www.twitch.tv/elaska" target="_blank" rel="noopener">
+        <div class="top">
+          <div class="platform">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M6 5h14v10.2l-4 3.8h-3l-2 2h-2v-2H8V7L6 5Z" stroke="currentColor" stroke-width="1.6" />
+                <path d="M11 9v5M15 9v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="name">Twitch</span>
+          </div>
+          <div class="time" id="twitchTime">…</div>
+        </div>
+        <div class="text" id="twitchText">Checking Twitch status…</div>
+      </a>
+
+      <!-- YouTube (manual text/time for now) -->
+      <a class="card" href="https://www.youtube.com/@eIaska" target="_blank" rel="noopener">
+        <div class="top">
+          <div class="platform">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M10 9l6 3-6 3V9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M4.5 8.2c.2-1 1-1.8 2-2 1.7-.4 9.3-.4 11 0 1 .2 1.8 1 2 2 .4 1.7.4 5.9 0 7.6-.2 1-1 1.8-2 2-1.7.4-9.3.4-11 0-1-.2-1.8-1-2-2-.4-1.7-.4-5.9 0-7.6Z" stroke="currentColor" stroke-width="1.4"/>
+              </svg>
+            </span>
+            <span class="name">YouTube</span>
+          </div>
+          <div class="time" id="ytTime">7d</div>
+        </div>
+        <div class="text" id="ytText">Elaska uploaded a new vlog 🍁 to YouTube</div>
+      </a>
+
+      <!-- Instagram (manual) -->
+      <a class="card" href="https://www.instagram.com/kitsudare/" target="_blank" rel="noopener" id="igLink">
+        <div class="top">
+          <div class="platform">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M8 4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M17.3 6.7h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="name">Instagram</span>
+          </div>
+          <div class="time" id="igTime">7d</div>
+        </div>
+        <div class="text" id="igText">Elaska posted on Instagram</div>
+      </a>
+
+      <!-- X (manual) -->
+      <a class="card" href="https://x.com/elaska" target="_blank" rel="noopener">
+        <div class="top">
+          <div class="platform">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M6 18 18 6M8 6h4l6 12h-4L8 6Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="name">X</span>
+          </div>
+          <div class="time" id="xTime">7d</div>
+        </div>
+        <div class="text" id="xText">Elaska posted on X</div>
+      </a>
+
+      <!-- Fansly (manual, linkable) -->
+      <a class="card" href="https://fansly.com/elaska" target="_blank" rel="noopener" id="fanslyLink">
+        <div class="top">
+          <div class="platform">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3l2.7 6 6.3.6-4.8 4.1 1.5 6.2-5.7-3.4-5.7 3.4 1.5-6.2L3 9.6 9.3 9 12 3Z"
+                  stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="name">Fansly</span>
+          </div>
+          <div class="time" id="fanslyTime">22d</div>
+        </div>
+        <div class="text" id="fanslyText">Elaska posted on Fansly</div>
+      </a>
     </div>
-    <div class="text">Eiaska uploaded a new vlog 🍁 to YouTube</div>
-  </a>
 
-  <!-- Instagram (manual placeholder for now) -->
-  <a class="card" href="https://www.instagram.com/kitsudare/" target="_blank" rel="noopener">
-    <div class="top">
-      <div class="platform">📸 Instagram</div>
-      <div class="time">7d</div>
-    </div>
-    <div class="text">Eiaska posted on Instagram</div>
-  </a>
+    <div class="softline"></div>
+  </div>
 
-  <!-- Fansly (links correctly now) -->
-  <a class="card" href="https://fansly.com/elaska" target="_blank" rel="noopener" id="fanslyLink">
-    <div class="top">
-      <div class="platform">⭐ Fansly</div>
-      <div class="time">22d</div>
-    </div>
-    <div class="text">Eiaska posted on Fansly</div>
-  </a>
+  <script>
+    /**
+     * Twitch LIVE checker
+     * Uses decapi uptime endpoint so we don’t need API keys.
+     * Polls every 60s and updates “LIVE” pill automatically.
+     */
+    async function checkTwitch(){
+      const timeEl = document.getElementById("twitchTime");
+      const textEl = document.getElementById("twitchText");
 
-</div>
+      try{
+        const res = await fetch("https://decapi.me/twitch/uptime/elaska", { cache: "no-store" });
+        const raw = (await res.text()).trim();
+        const lower = raw.toLowerCase();
 
-<script>
-  // Twitch LIVE check (no keys needed)
-  async function checkTwitch(){
-    const timeEl = document.getElementById("twitchTime");
-    const textEl = document.getElementById("twitchText");
-
-    try{
-      const res = await fetch("https://decapi.me/twitch/uptime/eiaska", { cache: "no-store" });
-      const t = (await res.text()).trim().toLowerCase();
-
-      if(t.includes("offline")){
+        if(lower.includes("offline")){
+          timeEl.classList.remove("live");
+          timeEl.textContent = "Offline";
+          textEl.textContent = "Elaska is currently offline on Twitch";
+        }else{
+          timeEl.classList.add("live");
+          timeEl.textContent = "LIVE";
+          // Keep the copy close to the sample style
+          textEl.textContent = "Elaska was live on Twitch streaming Fitness & Health";
+        }
+      }catch(e){
         timeEl.classList.remove("live");
-        timeEl.textContent = "Offline";
-        textEl.textContent = "Eiaska is currently offline on Twitch";
-      } else {
-        timeEl.classList.add("live");
-        timeEl.textContent = "LIVE";
-        textEl.textContent = "Eiaska is live on Twitch streaming Fitness & Health";
+        timeEl.textContent = "";
+        textEl.textContent = "Unable to check Twitch status right now";
       }
-    } catch(e){
-      timeEl.textContent = "";
-      textEl.textContent = "Unable to check Twitch status right now";
+
+      sendHeight(); // ensure Carrd auto-resizes after text changes
     }
 
-    sendHeight(); // ensure Carrd iframe resizes after updates
-  }
+    /**
+     * Auto-height: send content height to Carrd iframe
+     */
+    function sendHeight(){
+      const h = document.documentElement.scrollHeight;
+      parent.postMessage({ type: "feedHeight", height: h }, "*");
+    }
 
-  // Auto-resize helper (sends height to Carrd)
-  function sendHeight(){
-    const h = document.documentElement.scrollHeight;
-    parent.postMessage({ type: "feedHeight", height: h }, "*");
-  }
+    window.addEventListener("load", () => {
+      checkTwitch();
+      sendHeight();
+    });
 
-  window.addEventListener("load", () => {
-    checkTwitch();
-    sendHeight();
-  });
+    window.addEventListener("resize", sendHeight);
 
-  window.addEventListener("resize", sendHeight);
+    setInterval(checkTwitch, 60000);
+    setInterval(sendHeight, 1500);
 
-  // refresh Twitch status every 60 seconds
-  setInterval(checkTwitch, 60000);
-
-  // safety: keep height synced
-  setInterval(sendHeight, 1500);
-</script>
-
+    /**
+     * Optional helper:
+     * When IG handle changes to @elaska on New Years,
+     * you only need to update this one line:
+     * document.getElementById("igLink").href = "https://www.instagram.com/elaska/";
+     */
+  </script>
 </body>
 </html>
